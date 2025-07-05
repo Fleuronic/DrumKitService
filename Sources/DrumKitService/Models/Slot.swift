@@ -56,7 +56,7 @@ extension Slot.Identified: PersistDB.Model {
 private extension Slot.Identified {
 	init(
 		id: Slot.ID,
-		time: TimeInterval
+		time: TimeInterval?
 	) {
 		self.init(
 			id: id,
