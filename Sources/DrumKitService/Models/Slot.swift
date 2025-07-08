@@ -6,6 +6,8 @@ import Catenoid
 import Identity
 import Foundation
 import struct DrumKit.Slot
+import struct DrumKit.Performance
+import struct DrumKit.Feature
 import struct Catena.IDFields
 import protocol Catena.Valued
 
@@ -19,6 +21,8 @@ public extension Slot {
 public struct IdentifiedSlot: Sendable {
 	public let id: Slot.ID
 	public let value: Slot
+	public let performance: Performance.Identified!
+	public let feature: Feature.Identified!
 }
 
 // MARK: -
@@ -36,12 +40,16 @@ extension Slot.Identified: PersistDB.Model {
 	// MARK: Model
 	public enum Path: String, CodingKey {
 		case time
+		case performance
+		case feature
 	}
 
 	public static let schema = Schema(
 		Self.init,
 		\.id * .id,
-		\.value.time * .time
+		\.value.time * .time,
+		\.performance -?> .performance,
+		\.feature -?> .feature
 	)
 
 	public static let schemaName = "slots"
@@ -56,12 +64,15 @@ extension Slot.Identified: PersistDB.Model {
 private extension Slot.Identified {
 	init(
 		id: Slot.ID,
-		time: TimeInterval?
+		time: TimeInterval?,
+		performance: Performance.Identified?,
+		feature: Feature.Identified?
 	) {
 		self.init(
 			id: id,
-			value: .init(time: time)
+			value: .init(time: time),
+			performance: performance,
+			feature: feature
 		)
 	}
 }
-// MARK: -

@@ -5,34 +5,34 @@ import PersistDB
 import Catenoid
 import Identity
 import Foundation
-import struct DrumKit.Feature
+import struct DrumKit.Ensemble
 import struct Catena.IDFields
 import protocol Catena.Valued
 
-public extension Feature {
+public extension Ensemble {
 	typealias ID = Identified.ID
 	typealias IDFields = Catena.IDFields<Identified>
-	typealias Identified = IdentifiedFeature
+	typealias Identified = IdentifiedEnsemble
 }
 
 // MARK: -
-public struct IdentifiedFeature: Sendable {
-	public let id: Feature.ID
-	public let value: Feature
+public struct IdentifiedEnsemble: Sendable {
+	public let id: Ensemble.ID
+	public let value: Ensemble
 }
 
 // MARK: -
-extension Feature.Identified: Identifiable {
+extension Ensemble.Identified: Identifiable {
 	// MARK: Identifiable
 	public typealias RawIdentifier = UUID
 }
 
-extension Feature.Identified: Valued {
+extension Ensemble.Identified: Valued {
 	// MARK: Valued
-	public typealias Value = Feature
+	public typealias Value = Ensemble
 }
 
-extension Feature.Identified: PersistDB.Model {
+extension Ensemble.Identified: PersistDB.Model {
 	// MARK: Model
 	public enum Path: String, CodingKey {
 		case name
@@ -44,7 +44,7 @@ extension Feature.Identified: PersistDB.Model {
 		\.value.name * .name
 	)
 
-	public static let schemaName = "features"
+	public static let schemaName = "ensembles"
 
 	// MARK: Model
 	public static var defaultOrder: [Ordering<Self>] {
@@ -53,9 +53,9 @@ extension Feature.Identified: PersistDB.Model {
 }
 
 // MARK: -
-private extension Feature.Identified {
+private extension Ensemble.Identified {
 	init(
-		id: Feature.ID,
+		id: Ensemble.ID,
 		name: String
 	) {
 		self.init(
