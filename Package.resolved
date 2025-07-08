@@ -1,5 +1,5 @@
 {
-  "originHash" : "d90a7ce0f564ce3e3ba96ff937cc5b55bdeea29dfa43ed5a16d38db75f8ed723",
+  "originHash" : "6cd94480276987a74dc18d4d92456fb634a2ca07c0421e2499a35bebfb78789a",
   "pins" : [
     {
       "identity" : "caesura",
@@ -52,7 +52,7 @@
       "location" : "https://github.com/Fleuronic/DrumKit",
       "state" : {
         "branch" : "main",
-        "revision" : "df709938734ebdb8ed7b2ed033d8e4b8416b99d7"
+        "revision" : "d2590dc8110a2f1eb9cd145de0032fa738a2f641"
       }
     },
     {
