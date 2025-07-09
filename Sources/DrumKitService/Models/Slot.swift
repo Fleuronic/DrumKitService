@@ -6,6 +6,7 @@ import Catenoid
 import Identity
 import Foundation
 import struct DrumKit.Slot
+import struct DrumKit.Event
 import struct DrumKit.Performance
 import struct DrumKit.Feature
 import struct Catena.IDFields
@@ -21,6 +22,7 @@ public extension Slot {
 public struct IdentifiedSlot: Sendable {
 	public let id: Slot.ID
 	public let value: Slot
+	public let event: Event.Identified
 	public let performance: Performance.Identified!
 	public let feature: Feature.Identified!
 }
@@ -40,6 +42,7 @@ extension Slot.Identified: PersistDB.Model {
 	// MARK: Model
 	public enum Path: String, CodingKey {
 		case time
+		case event
 		case performance
 		case feature
 	}
@@ -48,6 +51,7 @@ extension Slot.Identified: PersistDB.Model {
 		Self.init,
 		\.id * .id,
 		\.value.time * .time,
+		\.event --> .event,
 		\.performance -?> .performance,
 		\.feature -?> .feature
 	)
@@ -65,14 +69,62 @@ private extension Slot.Identified {
 	init(
 		id: Slot.ID,
 		time: TimeInterval?,
+		event: Event.Identified,
 		performance: Performance.Identified?,
 		feature: Feature.Identified?
 	) {
 		self.init(
 			id: id,
 			value: .init(time: time),
+			event: event,
 			performance: performance,
 			feature: feature
 		)
+	}
+}
+
+// MARK: -
+public extension [Slot] {
+	var time: [TimeInterval?] { map(\.time) }
+}
+
+// MARK: -
+public extension [Slot.Identified] {
+	var id: [Slot.ID] { map(\.id) }
+	var value: [Slot] { map(\.value) }
+	var performance: [Performance.Identified] { map(\.performance) }
+	var feature: [Feature.Identified] { map(\.feature) }
+
+	// MARK: Model
+	static var schema: Schema<Self> {
+		let id = \Self.id * .id
+		return .init(
+			Self.init,
+			id,
+			\Self.value.time * .time,
+			\Self.performance -?> .performance,
+			\Self.feature -?> .feature
+		)
+	}
+}
+
+// MARK: -
+private extension [Slot.Identified] {
+	init(
+		ids: [Slot.ID],
+		times: [TimeInterval?],
+		performances: [Performance.Identified],
+		features: [Feature.Identified]
+	) {
+		let events: [Event.Identified] = []
+		self = ids.enumerated().map { index, id in
+			.init(
+				id: id,
+				time: times[index],
+				event: events[index],
+				performance: performances[index],
+				feature: features[index]
+			)
+		}
 	}
 }

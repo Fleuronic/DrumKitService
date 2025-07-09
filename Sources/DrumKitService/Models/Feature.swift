@@ -64,4 +64,36 @@ private extension Feature.Identified {
 		)
 	}
 }
+
 // MARK: -
+public extension [Feature] {
+	var name: [String] { map(\.name) }
+}
+
+// MARK: -
+public extension [Feature.Identified] {
+	var id: [Feature.ID] { map(\.id) }
+	var value: [Feature] { map(\.value) }
+
+	// MARK: Model
+	static let schema = Schema<Self>(
+		Self.init,
+		\.id * .id,
+		\.value.name * .name
+	)
+}
+
+// MARK: -
+private extension [Feature.Identified] {
+	init(
+		ids: [Feature.ID],
+		names: [String]
+	) {
+		self = ids.enumerated().map { index, id in
+			.init(
+				id: id,
+				name: names[index]
+			)
+		}
+	}
+}

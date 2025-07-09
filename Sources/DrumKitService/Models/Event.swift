@@ -10,6 +10,7 @@ import struct DrumKit.Circuit
 import struct DrumKit.Location
 import struct DrumKit.Show
 import struct DrumKit.Venue
+import struct DrumKit.Slot
 import struct Catena.IDFields
 import protocol Catena.Valued
 
@@ -27,6 +28,7 @@ public struct IdentifiedEvent: Sendable {
 	public let location: Location.Identified
 	public let show: Show.Identified!
 	public let venue: Venue.Identified!
+	public let slots: [Slot.Identified]
 }
 
 // MARK: -
@@ -48,6 +50,7 @@ extension Event.Identified: PersistDB.Model {
 		case location
 		case show
 		case venue
+		case slots
 	}
 
 	public static let schema = Schema(
@@ -57,7 +60,8 @@ extension Event.Identified: PersistDB.Model {
 		\.circuit -?> .circuit,
 		\.location --> .location,
 		\.show -?> .show,
-		\.venue -?> .venue
+		\.venue -?> .venue,
+		\.slots <<- \.event
 	)
 
 	public static let schemaName = "events"
@@ -76,7 +80,8 @@ private extension Event.Identified {
 		circuit: Circuit.Identified?,
 		location: Location.Identified,
 		show: Show.Identified?,
-		venue: Venue.Identified?
+		venue: Venue.Identified?,
+		slots: [Slot.Identified]
 	) {
 		self.init(
 			id: id,
@@ -84,7 +89,8 @@ private extension Event.Identified {
 			circuit: circuit,
 			location: location,
 			show: show,
-			venue: venue
+			venue: venue,
+			slots: slots
 		)
 	}
 }

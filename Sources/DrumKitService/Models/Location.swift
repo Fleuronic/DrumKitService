@@ -70,3 +70,40 @@ private extension Location.Identified {
 		)
 	}
 }
+
+// MARK: -
+public extension [Location] {
+	var city: [String] { map(\.city) }
+}
+
+// MARK: -
+public extension [Location.Identified] {
+	var id: [Location.ID] { map(\.id) }
+	var value: [Location] { map(\.value) }
+	var state: [State.Identified] { map(\.state) }
+
+	// MARK: Model
+	static let schema = Schema<Self>(
+		Self.init,
+		\.id * .id,
+		\.value.city * .city,
+		\.state --> .state
+	)
+}
+
+// MARK: -
+private extension [Location.Identified] {
+	init(
+		ids: [Location.ID],
+		cities: [String],
+		states: [State.Identified]
+	) {
+		self = ids.enumerated().map { index, id in
+			.init(
+				id: id,
+				city: cities[index],
+				state: states[index]
+			)
+		}
+	}
+}

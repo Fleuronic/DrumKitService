@@ -64,4 +64,36 @@ private extension Country.Identified {
 		)
 	}
 }
+
 // MARK: -
+public extension [Country] {
+	var name: [String] { map(\.name) }
+}
+
+// MARK: -
+public extension [Country.Identified] {
+	var id: [Country.ID] { map(\.id) }
+	var value: [Country] { map(\.value) }
+
+	// MARK: Model
+	static let schema = Schema<Self>(
+		Self.init,
+		\.id * .id,
+		\.value.name * .name
+	)
+}
+
+// MARK: -
+private extension [Country.Identified] {
+	init(
+		ids: [Country.ID],
+		names: [String]
+	) {
+		self = ids.enumerated().map { index, id in
+			.init(
+				id: id,
+				name: names[index]
+			)
+		}
+	}
+}

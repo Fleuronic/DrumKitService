@@ -70,3 +70,40 @@ private extension Corps.Identified {
 		)
 	}
 }
+
+// MARK: -
+public extension [Corps] {
+	var name: [String] { map(\.name) }
+}
+
+// MARK: -
+public extension [Corps.Identified] {
+	var id: [Corps.ID] { map(\.id) }
+	var value: [Corps] { map(\.value) }
+	var location: [Location.Identified] { map(\.location) }
+
+	// MARK: Model
+	static let schema = Schema<Self>(
+		Self.init,
+		\.id * .id,
+		\.value.name * .name,
+		\.location --> .location
+	)
+}
+
+// MARK: -
+private extension [Corps.Identified] {
+	init(
+		ids: [Corps.ID],
+		names: [String],
+		locations: [Location.Identified]
+	) {
+		self = ids.enumerated().map { index, id in
+			.init(
+				id: id,
+				name: names[index],
+				location: locations[index]
+			)
+		}
+	}
+}

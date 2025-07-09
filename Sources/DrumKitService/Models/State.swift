@@ -70,3 +70,40 @@ private extension State.Identified {
 		)
 	}
 }
+
+// MARK: -
+public extension [State] {
+	var abbreviation: [String] { map(\.abbreviation) }
+}
+
+// MARK: -
+public extension [State.Identified] {
+	var id: [State.ID] { map(\.id) }
+	var value: [State] { map(\.value) }
+	var country: [Country.Identified] { map(\.country) }
+
+	// MARK: Model
+	static let schema = Schema<Self>(
+		Self.init,
+		\.id * .id,
+		\.value.abbreviation * .abbreviation,
+		\.country --> .country
+	)
+}
+
+// MARK: -
+private extension [State.Identified] {
+	init(
+		ids: [State.ID],
+		abbreviations: [String],
+		countries: [Country.Identified]
+	) {
+		self = ids.enumerated().map { index, id in
+			.init(
+				id: id,
+				abbreviation: abbreviations[index],
+				country: countries[index]
+			)
+		}
+	}
+}
