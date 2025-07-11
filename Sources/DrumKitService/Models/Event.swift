@@ -24,10 +24,10 @@ public extension Event {
 public struct IdentifiedEvent: Sendable {
 	public let id: Event.ID
 	public let value: Event
-	public let circuit: Circuit.Identified!
+	public let circuit: Circuit.Identified
 	public let location: Location.Identified
-	public let show: Show.Identified!
-	public let venue: Venue.Identified!
+	public let show: Show.Identified
+	public let venue: Venue.Identified
 	public let slots: [Slot.Identified]
 }
 
@@ -77,10 +77,10 @@ private extension Event.Identified {
 	init(
 		id: Event.ID,
 		date: Date,
-		circuit: Circuit.Identified?,
+		circuit: Circuit.Identified,
 		location: Location.Identified,
-		show: Show.Identified?,
-		venue: Venue.Identified?,
+		show: Show.Identified,
+		venue: Venue.Identified,
 		slots: [Slot.Identified]
 	) {
 		self.init(

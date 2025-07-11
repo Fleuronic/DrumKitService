@@ -20,7 +20,7 @@ public extension Placement {
 public struct IdentifiedPlacement: Sendable {
 	public let id: Placement.ID
 	public let value: Placement
-	public let division: Division.Identified!
+	public let division: Division.Identified
 }
 
 // MARK: -
@@ -59,7 +59,7 @@ private extension Placement.Identified {
 		id: Placement.ID,
 		rank: Int,
 		score: Double,
-		division: Division.Identified?
+		division: Division.Identified
 	) {
 		self.init(
 			id: id,

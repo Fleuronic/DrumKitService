@@ -7,6 +7,7 @@ import struct DrumKit.Performance
 import struct DrumKit.Placement
 import struct DrumKit.Division
 import struct DrumKit.Corps
+import struct DrumKit.Ensemble
 import struct DrumKit.Location
 import struct DrumKit.State
 import struct DrumKit.Country
@@ -30,6 +31,8 @@ extension Array: Schemata.Model where Element: Model {
 		} else if let type = self as? [Division.Identified].Type {
 			return type.schema as! Schema<Self>
 		} else if let type = self as? [Corps.Identified].Type {
+			return type.schema as! Schema<Self>
+		} else if let type = self as? [Ensemble.Identified].Type {
 			return type.schema as! Schema<Self>
 		} else if let type = self as? [Location.Identified].Type {
 			return type.schema as! Schema<Self>

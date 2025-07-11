@@ -8,6 +8,7 @@ import Foundation
 import struct DrumKit.Performance
 import struct DrumKit.Corps
 import struct DrumKit.Placement
+import struct DrumKit.Ensemble
 import struct Catena.IDFields
 import protocol Catena.Valued
 
@@ -20,8 +21,9 @@ public extension Performance {
 // MARK: -
 public struct IdentifiedPerformance: Sendable {
 	public let id: Performance.ID
-	public let corps: Corps.Identified!
-	public let placement: Placement.Identified!
+	public let corps: Corps.Identified
+	public let ensemble: Ensemble.Identified
+	public let placement: Placement.Identified
 }
 
 // MARK: -
@@ -34,6 +36,7 @@ extension Performance.Identified: PersistDB.Model {
 	// MARK: Model
 	public enum Path: String, CodingKey {
 		case corps
+		case ensemble
 		case placement
 	}
 
@@ -41,6 +44,7 @@ extension Performance.Identified: PersistDB.Model {
 		Self.init,
 		\.id * .id,
 		\.corps -?> .corps,
+		\.ensemble -?> .ensemble,
 		\.placement -?> .placement
 	)
 
@@ -56,6 +60,7 @@ extension Performance.Identified: PersistDB.Model {
 public extension [Performance.Identified] {
 	var id: [Performance.ID] { map(\.id) }
 	var corps: [Corps.Identified] { map(\.corps) }
+	var ensemble: [Ensemble.Identified] { map(\.ensemble) }
 	var placement: [Placement.Identified] { map(\.placement) }
 
 	// MARK: Model
@@ -63,6 +68,7 @@ public extension [Performance.Identified] {
 		Self.init,
 		\.id * .id,
 		\.corps -?> .corps,
+		\.ensemble -?> .ensemble,
 		\.placement -?> .placement
 	)
 }
@@ -72,12 +78,14 @@ private extension [Performance.Identified] {
 	init(
 		ids: [Performance.ID],
 		corps: [Corps.Identified],
+		ensembles: [Ensemble.Identified],
 		placements: [Placement.Identified]
 	) {
 		self = ids.enumerated().map { index, id in
 			.init(
 				id: id,
 				corps: corps[index],
+				ensemble: ensembles[index],
 				placement: placements[index]
 			)
 		}

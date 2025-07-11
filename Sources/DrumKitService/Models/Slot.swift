@@ -6,6 +6,7 @@ import Catenoid
 import Identity
 import Foundation
 import struct DrumKit.Slot
+import struct DrumKit.Time
 import struct DrumKit.Event
 import struct DrumKit.Performance
 import struct DrumKit.Feature
@@ -23,8 +24,8 @@ public struct IdentifiedSlot: Sendable {
 	public let id: Slot.ID
 	public let value: Slot
 	public let event: Event.Identified
-	public let performance: Performance.Identified!
-	public let feature: Feature.Identified!
+	public let performance: Performance.Identified
+	public let feature: Feature.Identified
 }
 
 // MARK: -
@@ -68,10 +69,10 @@ extension Slot.Identified: PersistDB.Model {
 private extension Slot.Identified {
 	init(
 		id: Slot.ID,
-		time: TimeInterval?,
+		time: Time?,
 		event: Event.Identified,
-		performance: Performance.Identified?,
-		feature: Feature.Identified?
+		performance: Performance.Identified,
+		feature: Feature.Identified
 	) {
 		self.init(
 			id: id,
@@ -85,7 +86,7 @@ private extension Slot.Identified {
 
 // MARK: -
 public extension [Slot] {
-	var time: [TimeInterval?] { map(\.time) }
+	var time: [Time?] { map(\.time) }
 }
 
 // MARK: -
@@ -112,7 +113,7 @@ public extension [Slot.Identified] {
 private extension [Slot.Identified] {
 	init(
 		ids: [Slot.ID],
-		times: [TimeInterval?],
+		times: [Time?],
 		performances: [Performance.Identified],
 		features: [Feature.Identified]
 	) {
