@@ -14,7 +14,7 @@ extension Time: Schemata.ModelValue {
 			)
 		},
 		encode: {
-			Date(timeIntervalSince1970: $0.offset).formatted(formatStyle(for: $0.zone))
+			String(Date(timeIntervalSince1970: $0.offset).formatted(formatStyle(for: $0.zone)).dropLast(2))
 		}
 	)
 

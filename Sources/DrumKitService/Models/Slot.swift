@@ -98,13 +98,12 @@ public extension [Slot.Identified] {
 
 	// MARK: Model
 	static var schema: Schema<Self> {
-		let id = \Self.id * .id
-		return .init(
+		.init(
 			Self.init,
-			id,
-			\Self.value.time * .time,
-			\Self.performance -?> .performance,
-			\Self.feature -?> .feature
+			\.id * .id,
+			\.value.time * .time,
+			\.performance -?> .performance,
+			\.feature -?> .feature
 		)
 	}
 }
