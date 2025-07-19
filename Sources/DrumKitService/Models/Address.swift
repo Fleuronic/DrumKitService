@@ -52,7 +52,7 @@ extension Address.Identified: PersistDB.Model {
 		\.zipCode --> .zipCode
 	)
 
-	public static let schemaName = "venues"
+	public static let schemaName = "addresses"
 
 	// MARK: Model
 	public static var defaultOrder: [Ordering<Self>] {
