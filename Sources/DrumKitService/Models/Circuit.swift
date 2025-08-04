@@ -22,6 +22,13 @@ public struct IdentifiedCircuit: Sendable {
 }
 
 // MARK: -
+extension Circuit.Identified {
+	static func predicate(abbreviation: String) -> PersistDB.Predicate<Self> {
+		\.value.abbreviation == abbreviation
+	}
+}
+
+// MARK: -
 extension Circuit.Identified: Identifiable {
 	// MARK: Identifiable
 	public typealias RawIdentifier = UUID
@@ -36,12 +43,14 @@ extension Circuit.Identified: PersistDB.Model {
 	// MARK: Model
 	public enum Path: String, CodingKey {
 		case name
+		case abbreviation
 	}
 
 	public static let schema = Schema(
 		Self.init,
 		\.id * .id,
-		\.value.name * .name
+		\.value.name * .name,
+		\.value.abbreviation * .abbreviation
 	)
 
 	public static let schemaName = "circuits"
@@ -56,12 +65,15 @@ extension Circuit.Identified: PersistDB.Model {
 private extension Circuit.Identified {
 	init(
 		id: Circuit.ID,
-		name: String
+		name: String,
+		abbreviation: String
 	) {
 		self.init(
 			id: id,
-			value: .init(name: name)
+			value: .init(
+				name: name,
+				abbreviation: abbreviation
+			)
 		)
 	}
 }
-// MARK: -

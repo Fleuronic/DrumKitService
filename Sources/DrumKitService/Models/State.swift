@@ -24,6 +24,13 @@ public struct IdentifiedState: Sendable {
 }
 
 // MARK: -
+extension State.Identified {
+	static func predicate(abbreviation: String) -> PersistDB.Predicate<Self> {
+		\.value.abbreviation == abbreviation
+	}
+}
+
+// MARK: -
 extension State.Identified: Identifiable {
 	// MARK: Identifiable
 	public typealias RawIdentifier = UUID
