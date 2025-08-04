@@ -13,20 +13,5 @@ public protocol SlotSpec {
 
 	associatedtype SlotListFields: SlotFields
 
-	func listSlots() async -> SlotList
 	func listSlots(inEventWith id: Event.ID) async -> SlotList
-}
-
-// MARK: -
-public extension SlotSpec where
-	Self: Storage & ResultProviding,
-	Error == StorageError,
-	SlotListFields: Fields<Slot.Identified> & Decodable {
-	func listSlots() async -> Results<SlotListFields> {
-		await fetch()
-	}
-
-	func listSlots(inEventWith id: Event.ID) async -> Results<SlotListFields> {
-		await fetch(where: \.event.id == id)
-	}
 }
