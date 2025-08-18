@@ -22,6 +22,13 @@ public struct IdentifiedZIPCode: Sendable {
 }
 
 // MARK: -
+extension ZIPCode.Identified {
+	static func predicate(code: String) -> PersistDB.Predicate<Self> {
+		\.value.code == code
+	}
+}
+
+// MARK: -
 extension ZIPCode.Identified: Identifiable {
 	// MARK: Identifiable
 	public typealias RawIdentifier = UUID

@@ -26,6 +26,13 @@ public struct IdentifiedAddress: Sendable {
 }
 
 // MARK: -
+extension Address.Identified {
+	static func predicate(streetAddress: String) -> PersistDB.Predicate<Self> {
+		\.value.streetAddress == streetAddress
+	}
+}
+
+// MARK: -
 extension Address.Identified: Identifiable {
 	// MARK: Identifiable
 	public typealias RawIdentifier = UUID
