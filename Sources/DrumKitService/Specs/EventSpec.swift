@@ -11,7 +11,7 @@ public protocol EventSpec {
 
 	associatedtype EventListFields: EventFields
 
-	func listEvents() async -> EventList
+	func listEvents(for year: Int) async -> EventList
 }
 
 // MARK: -
@@ -19,7 +19,8 @@ public extension EventSpec where
 	Self: Storage & ResultProviding,
 	Error == StorageError,
 	EventListFields: Fields<Event.Identified> & Decodable {
-	func listEvents() async -> Results<EventListFields> {
-		await fetch()
+	func listEvents(for year: Int) async -> Results<EventListFields> {
+		let predicate = Event.Identified.predicate(year: year)
+		return await fetch(where: predicate)
 	}
 }

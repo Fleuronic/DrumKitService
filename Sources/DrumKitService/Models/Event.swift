@@ -32,6 +32,16 @@ public struct IdentifiedEvent: Sendable {
 }
 
 // MARK: -
+extension Event.Identified {
+	static func predicate(year: Int) -> PersistDB.Predicate<Self> {
+		let calendar = Calendar.current
+		let startOfYear = DateComponents(calendar: calendar, year: year).date!
+		let endOfYear = calendar.date(byAdding: .year, value: 1, to: startOfYear)!
+		return \.value.date > startOfYear && \.value.date < endOfYear
+	}
+}
+
+// MARK: -
 extension Event.Identified: Identifiable {
 	// MARK: Identifiable
 	public typealias RawIdentifier = UUID

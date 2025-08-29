@@ -13,5 +13,5 @@ public protocol SlotSpec {
 
 	associatedtype SlotListFields: SlotFields
 
-	func listSlots(inEventWith id: Event.ID) async -> SlotList
+	func listSlots(in year: Int) async -> SlotList
 }
