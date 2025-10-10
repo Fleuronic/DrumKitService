@@ -77,3 +77,40 @@ private extension Circuit.Identified {
 		)
 	}
 }
+
+// MARK: -
+public extension [Circuit] {
+	var name: [String] { map(\.name) }
+	var abbreviation: [String] { map(\.abbreviation) }
+}
+
+// MARK: -
+public extension [Circuit.Identified] {
+	var id: [Circuit.ID] { map(\.id) }
+	var value: [Circuit] { map(\.value) }
+
+	// MARK: Model
+	static let schema = Schema<Self>(
+		Self.init,
+		\.id * .id,
+		\.value.name * .name,
+		\.value.abbreviation * .abbreviation
+	)
+}
+
+// MARK: -
+private extension [Circuit.Identified] {
+	init(
+		ids: [Circuit.ID],
+		names: [String],
+		abbreviations: [String]
+	) {
+		self = ids.enumerated().map { index, id in
+			.init(
+				id: id,
+				name: names[index],
+				abbreviation: abbreviations[index]
+			)
+		}
+	}
+}

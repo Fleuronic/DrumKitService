@@ -11,6 +11,7 @@ import struct DrumKit.Ensemble
 import struct DrumKit.Location
 import struct DrumKit.State
 import struct DrumKit.Country
+import struct DrumKit.Circuit
 
 extension Array: Schemata.AnyModel where Element: Model {
 	public static var anySchema: AnySchema {
@@ -39,6 +40,8 @@ extension Array: Schemata.Model where Element: Model {
 		} else if let type = self as? [State.Identified].Type {
 			return type.schema as! Schema<Self>
 		} else if let type = self as? [Country.Identified].Type {
+			return type.schema as! Schema<Self>
+		} else if let type = self as? [Circuit.Identified].Type {
 			return type.schema as! Schema<Self>
 		}
 
