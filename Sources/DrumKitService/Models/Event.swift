@@ -56,6 +56,8 @@ extension Event.Identified: PersistDB.Model {
 	// MARK: Model
 	public enum Path: String, CodingKey {
 		case date
+		case detailsURL = "details_url"
+		case scoresURL = "scores_url"
 		case circuit
 		case location
 		case show
@@ -67,6 +69,8 @@ extension Event.Identified: PersistDB.Model {
 		Self.init,
 		\.id * .id,
 		\.value.date * .date,
+		\.value.detailsURL * .detailsURL,
+		\.value.scoresURL * .scoresURL,
 		\.circuit -?> .circuit,
 		\.location --> .location,
 		\.show -?> .show,
@@ -87,6 +91,8 @@ private extension Event.Identified {
 	init(
 		id: Event.ID,
 		date: Date,
+		detailsURL: URL?,
+		scoresURL: URL?,
 		circuit: Circuit.Identified,
 		location: Location.Identified,
 		show: Show.Identified,
@@ -95,7 +101,11 @@ private extension Event.Identified {
 	) {
 		self.init(
 			id: id,
-			value: .init(date: date),
+			value: .init(
+				date: date,
+				detailsURL: detailsURL,
+				scoresURL: scoresURL
+			),
 			circuit: circuit,
 			location: location,
 			show: show,
