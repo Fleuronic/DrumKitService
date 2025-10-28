@@ -24,7 +24,7 @@ public struct IdentifiedCircuit: Sendable {
 // MARK: -
 extension Circuit.Identified {
 	static func predicate(abbreviation: String) -> PersistDB.Predicate<Self> {
-		\.value.abbreviation == abbreviation
+		\.value.abbreviation == abbreviation || \.value.name == abbreviation
 	}
 }
 
@@ -66,7 +66,7 @@ private extension Circuit.Identified {
 	init(
 		id: Circuit.ID,
 		name: String,
-		abbreviation: String
+		abbreviation: String?
 	) {
 		self.init(
 			id: id,
@@ -81,7 +81,7 @@ private extension Circuit.Identified {
 // MARK: -
 public extension [Circuit] {
 	var name: [String] { map(\.name) }
-	var abbreviation: [String] { map(\.abbreviation) }
+	var abbreviation: [String?] { map(\.abbreviation) }
 }
 
 // MARK: -
@@ -103,7 +103,7 @@ private extension [Circuit.Identified] {
 	init(
 		ids: [Circuit.ID],
 		names: [String],
-		abbreviations: [String]
+		abbreviations: [String?]
 	) {
 		self = ids.enumerated().map { index, id in
 			.init(
