@@ -24,13 +24,6 @@ public struct IdentifiedCorps: Sendable {
 }
 
 // MARK: -
-extension Corps.Identified {
-	static func predicate(name: String) -> PersistDB.Predicate<Self> {
-		\.value.name == name
-	}
-}
-
-// MARK: -
 extension Corps.Identified: Identifiable {
 	// MARK: Identifiable
 	public typealias RawIdentifier = UUID
@@ -45,6 +38,8 @@ extension Corps.Identified: PersistDB.Model {
 	// MARK: Model
 	public enum Path: String, CodingKey {
 		case name
+		case url
+		case isActive = "active"
 		case location
 	}
 
@@ -52,6 +47,8 @@ extension Corps.Identified: PersistDB.Model {
 		Self.init,
 		\.id * .id,
 		\.value.name * .name,
+		\.value.url * .url,
+		\.value.isActive * .isActive,
 		\.location --> .location
 	)
 
@@ -68,11 +65,17 @@ private extension Corps.Identified {
 	init(
 		id: Corps.ID,
 		name: String,
+		url: URL?,
+		isActive: Bool,
 		location: Location.Identified
 	) {
 		self.init(
 			id: id,
-			value: .init(name: name),
+			value: .init(
+				name: name,
+				url: url,
+				isActive: isActive
+			),
 			location: location
 		)
 	}
@@ -81,6 +84,8 @@ private extension Corps.Identified {
 // MARK: -
 public extension [Corps] {
 	var name: [String] { map(\.name) }
+	var url: [URL?] { map(\.url) }
+	var isActive: [Bool] { map(\.isActive) }
 }
 
 // MARK: -
@@ -94,6 +99,8 @@ public extension [Corps.Identified] {
 		Self.init,
 		\.id * .id,
 		\.value.name * .name,
+		\.value.url * .url,
+		\.value.isActive * .isActive,
 		\.location --> .location
 	)
 }
@@ -103,12 +110,16 @@ private extension [Corps.Identified] {
 	init(
 		ids: [Corps.ID],
 		names: [String],
+		urls: [URL?],
+		isActiveFlags: [Bool],
 		locations: [Location.Identified]
 	) {
 		self = ids.enumerated().map { index, id in
 			.init(
 				id: id,
 				name: names[index],
+				url: urls[index],
+				isActive: isActiveFlags[index],
 				location: locations[index]
 			)
 		}
