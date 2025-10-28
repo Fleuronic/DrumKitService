@@ -24,7 +24,7 @@ public struct IdentifiedCircuit: Sendable {
 // MARK: -
 extension Circuit.Identified {
 	static func predicate(abbreviation: String) -> PersistDB.Predicate<Self> {
-		\.value.abbreviation == abbreviation || \.value.name == abbreviation
+		\.value.abbreviation == abbreviation
 	}
 }
 
