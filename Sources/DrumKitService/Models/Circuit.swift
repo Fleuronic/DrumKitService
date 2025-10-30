@@ -44,6 +44,7 @@ extension Circuit.Identified: PersistDB.Model {
 	public enum Path: String, CodingKey {
 		case name
 		case abbreviation
+		case url
 	}
 
 	public static let schema = Schema(
@@ -51,6 +52,7 @@ extension Circuit.Identified: PersistDB.Model {
 		\.id * .id,
 		\.value.name * .name,
 		\.value.abbreviation * .abbreviation
+		\.value.url * .url
 	)
 
 	public static let schemaName = "circuits"
@@ -66,13 +68,15 @@ private extension Circuit.Identified {
 	init(
 		id: Circuit.ID,
 		name: String,
-		abbreviation: String?
+		abbreviation: String?,
+		url: URL?
 	) {
 		self.init(
 			id: id,
 			value: .init(
 				name: name,
-				abbreviation: abbreviation
+				abbreviation: abbreviation,
+				url: url
 			)
 		)
 	}
@@ -82,6 +86,7 @@ private extension Circuit.Identified {
 public extension [Circuit] {
 	var name: [String] { map(\.name) }
 	var abbreviation: [String?] { map(\.abbreviation) }
+	var url: [URL?] { map(\.url) }
 }
 
 // MARK: -
@@ -95,6 +100,7 @@ public extension [Circuit.Identified] {
 		\.id * .id,
 		\.value.name * .name,
 		\.value.abbreviation * .abbreviation
+		\.value.url * .url
 	)
 }
 
@@ -103,13 +109,15 @@ private extension [Circuit.Identified] {
 	init(
 		ids: [Circuit.ID],
 		names: [String],
-		abbreviations: [String?]
+		abbreviations: [String?],
+		urls: [URL?]
 	) {
 		self = ids.enumerated().map { index, id in
 			.init(
 				id: id,
 				name: names[index],
-				abbreviation: abbreviations[index]
+				abbreviation: abbreviations[index],
+				url: urls[index]
 			)
 		}
 	}
