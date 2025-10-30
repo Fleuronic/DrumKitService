@@ -51,7 +51,7 @@ extension Circuit.Identified: PersistDB.Model {
 		Self.init,
 		\.id * .id,
 		\.value.name * .name,
-		\.value.abbreviation * .abbreviation
+		\.value.abbreviation * .abbreviation,
 		\.value.url * .url
 	)
 
@@ -99,7 +99,7 @@ public extension [Circuit.Identified] {
 		Self.init,
 		\.id * .id,
 		\.value.name * .name,
-		\.value.abbreviation * .abbreviation
+		\.value.abbreviation * .abbreviation,
 		\.value.url * .url
 	)
 }
