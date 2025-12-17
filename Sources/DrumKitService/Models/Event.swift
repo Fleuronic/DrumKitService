@@ -33,11 +33,14 @@ public struct IdentifiedEvent: Sendable {
 
 // MARK: -
 extension Event.Identified {
-	static func predicate(year: Int) -> PersistDB.Predicate<Self> {
+	static func predicate(
+		year: Int,
+		excludedCircuitNames: [String]
+	) -> PersistDB.Predicate<Self> {
 		let calendar = Calendar.current
 		let startOfYear = DateComponents(calendar: calendar, year: year).date!
 		let endOfYear = calendar.date(byAdding: .year, value: 1, to: startOfYear)!
-		return \.value.date > startOfYear && \.value.date < endOfYear
+		return \.value.date > startOfYear && \.value.date < endOfYear && !excludedCircuitNames.contains(\.circuit.value.name)
 	}
 }
 
