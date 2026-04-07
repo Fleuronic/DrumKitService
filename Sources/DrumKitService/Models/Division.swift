@@ -27,9 +27,9 @@ public struct IdentifiedDivision: Sendable {
 extension Division.Identified {
 	static func predicate(
 		name: String,
-		circuit: String
+		circuitAbbreviation: String
 	) -> PersistDB.Predicate<Self> {
-		\.value.name == name && \.circuit.value.abbreviation == circuit
+		\.value.name == name && \.circuit.value.abbreviation == circuitAbbreviation
 	}
 }
 
