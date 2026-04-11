@@ -1,5 +1,6 @@
 // Copyright © Fleuronic LLC. All rights reserved.
 
+import Foundation
 import struct DrumKit.Event
 import protocol Catena.Scoped
 import protocol Catena.ResultProviding
@@ -14,7 +15,7 @@ public protocol EventSpec {
 	associatedtype EventFetchFields: EventFields
 
 	func listEvents(for year: Int, excludingCircuitsNamed circuitNames: [String]) async -> EventList
-	func fetchEvent() async -> EventFetch
+	func fetchEvent(with detailsURL: URL) async -> EventFetch
 }
 
 // MARK: -
@@ -32,8 +33,11 @@ public extension EventSpec where
 		)
 	}
 
-	func fetchEvent() async -> SingleResult<EventFetchFields?> {
-		let results: Results<EventFetchFields> = await fetch()
+	func fetchEvent(with detailsURL: URL) async -> SingleResult<EventFetchFields?> {
+		let results: Results<EventFetchFields> = await fetch(
+			where: Event.Identified.predicate(detailsURL: detailsURL)
+		)
+
 		return results.map(\.first)
 	}
 }
