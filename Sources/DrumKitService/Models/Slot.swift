@@ -9,6 +9,8 @@ import struct DrumKit.Slot
 import struct DrumKit.Time
 import struct DrumKit.Event
 import struct DrumKit.Performance
+import struct DrumKit.Corps
+import struct DrumKit.Ensemble
 import struct DrumKit.Feature
 import struct Catena.IDFields
 import protocol Catena.Valued
@@ -26,6 +28,32 @@ public struct IdentifiedSlot: Sendable {
 	public let event: Event.Identified
 	public let performance: Performance.Identified
 	public let feature: Feature.Identified
+}
+
+// MARK: -
+extension Slot.Identified {
+	static func predicate(year: Int) -> PersistDB.Predicate<Self> {
+		let calendar = Calendar.current
+		let startOfYear = DateComponents(calendar: calendar, year: year).date!
+		let endOfYear = calendar.date(byAdding: .year, value: 1, to: startOfYear)!
+		return \.event.value.date > startOfYear && \.event.value.date < endOfYear
+	}
+
+	static func predicate(
+		eventID: Event.ID,
+		corpsID: Corps.ID?,
+		ensembleID: Ensemble.ID?
+	) -> PersistDB.Predicate<Self> {
+		var predicate: PersistDB.Predicate<Self> = \.event.id == eventID
+
+		if let corpsID {
+			predicate = predicate && \.performance.corps.id == corpsID
+		} else if let ensembleID {
+			predicate = predicate && \.performance.ensemble.id == ensembleID
+		}
+
+		return predicate
+	}
 }
 
 // MARK: -
