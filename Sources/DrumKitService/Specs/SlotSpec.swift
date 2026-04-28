@@ -1,6 +1,7 @@
 // Copyright © Fleuronic LLC. All rights reserved.
 
 import PersistDB
+import Foundation
 import struct DrumKit.Slot
 import struct DrumKit.Event
 import struct DrumKit.Performance
@@ -18,7 +19,7 @@ public protocol SlotSpec {
 	associatedtype SlotListFields: SlotFields
 
 	func listSlots(in year: Int) async -> SlotList
-	func fetchSlots(inEventWith eventID: Event.ID, forPerformanceByCorpsWith corpsID: Corps.ID?, ensembleWith ensembleID: Ensemble.ID?) async -> SlotList
+	func fetchSlots(inEventWith detailsURL: URL) async -> SlotList
 }
 
 // MARK: -
@@ -28,6 +29,10 @@ public extension SlotSpec where
 	SlotListFields: Fields<Slot.Identified> & Decodable {
 	func listSlots(in year: Int) async -> Results<SlotListFields> {
 		await fetch(where: Slot.Identified.predicate(year: year))
+	}
+
+	func fetchSlots(inEventWith detailsURL: URL) async -> Results<SlotListFields> {
+		await fetch(where: Slot.Identified.predicate(eventDetailsURL: detailsURL))
 	}
 
 	func fetchSlots(inEventWith eventID: Event.ID, forPerformanceByCorpsWith corpsID: Corps.ID?, ensembleWith ensembleID: Ensemble.ID?) async -> Results<SlotListFields> {

@@ -39,6 +39,10 @@ extension Slot.Identified {
 		return \.event.value.date > startOfYear && \.event.value.date < endOfYear
 	}
 
+	static func predicate(eventDetailsURL: URL) -> PersistDB.Predicate<Self> {
+		\.event.value.detailsURL == eventDetailsURL
+	}
+
 	static func predicate(
 		eventID: Event.ID,
 		corpsID: Corps.ID?,

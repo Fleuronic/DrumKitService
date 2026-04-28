@@ -7,10 +7,11 @@ extension Time: Schemata.ModelValue {
 		decode: { string in
 			let offsetString = String(string.suffix(3))
 			let offset = try! Int(offsetString, format: .number)
+			let zone = TimeZone(secondsFromGMT: offset * 3600)!
 
 			return Time(
-				offset: try! Date(string, strategy: formatStyle().parseStrategy).timeIntervalSince1970,
-				zone: .init(secondsFromGMT: offset * 3600)!
+				offset: try! Date(string, strategy: formatStyle(for: zone).parseStrategy).timeIntervalSince1970,
+				zone: zone
 			)
 		},
 		encode: {
