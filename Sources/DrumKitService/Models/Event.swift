@@ -37,6 +37,10 @@ extension Event.Identified {
 		\.value.detailsURL == detailsURL
 	}
 
+	static func predicate(date: Date) -> PersistDB.Predicate<Self> {
+		\.value.date == date
+	}
+
 	static func predicate(
 		year: Int,
 		excludedCircuitNames: [String]

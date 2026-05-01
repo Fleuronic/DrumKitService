@@ -19,7 +19,7 @@ public protocol SlotSpec {
 	associatedtype SlotListFields: SlotFields
 
 	func listSlots(in year: Int) async -> SlotList
-	func fetchSlots(inEventWith detailsURL: URL) async -> SlotList
+	func listSlots(inEventWith detailsURL: URL) async -> SlotList
 }
 
 // MARK: -
@@ -31,11 +31,11 @@ public extension SlotSpec where
 		await fetch(where: Slot.Identified.predicate(year: year))
 	}
 
-	func fetchSlots(inEventWith detailsURL: URL) async -> Results<SlotListFields> {
+	func listSlots(inEventWith detailsURL: URL) async -> Results<SlotListFields> {
 		await fetch(where: Slot.Identified.predicate(eventDetailsURL: detailsURL))
 	}
 
-	func fetchSlots(inEventWith eventID: Event.ID, forPerformanceByCorpsWith corpsID: Corps.ID?, ensembleWith ensembleID: Ensemble.ID?) async -> Results<SlotListFields> {
+	func listSlots(inEventWith eventID: Event.ID, forPerformanceByCorpsWith corpsID: Corps.ID?, ensembleWith ensembleID: Ensemble.ID?) async -> Results<SlotListFields> {
 		await fetch(
 			where: Slot.Identified.predicate(
 				eventID: eventID,
