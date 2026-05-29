@@ -96,7 +96,7 @@ public extension [Circuit.Identified] {
 
 	// MARK: Model
 	static let schema = Schema<Self>(
-		Self.init,
+		Self.init(ids:names:abbreviations:urls:),
 		\.id * .id,
 		\.value.name * .name,
 		\.value.abbreviation * .abbreviation,

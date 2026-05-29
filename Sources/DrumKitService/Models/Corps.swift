@@ -103,7 +103,7 @@ public extension [Corps.Identified] {
 
 	// MARK: Model
 	static let schema = Schema<Self>(
-		Self.init,
+		Self.init(ids:names:urls:isActiveFlags:locations:),
 		\.id * .id,
 		\.value.name * .name,
 		\.value.url * .url,
