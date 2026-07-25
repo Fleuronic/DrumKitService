@@ -34,7 +34,7 @@ public struct IdentifiedSlot: Sendable {
 extension Slot.Identified {
 	static func predicate(year: Int) -> PersistDB.Predicate<Self> {
 		let calendar = Calendar.current
-		let startOfYear = DateComponents(calendar: calendar, year: year).date!
+		let startOfYear = DateComponents(calendar: calendar, year: year, month: 5).date!
 		let endOfYear = calendar.date(byAdding: .year, value: 1, to: startOfYear)!
 		return \.event.value.date > startOfYear && \.event.value.date < endOfYear
 	}
