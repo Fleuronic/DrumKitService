@@ -46,7 +46,7 @@ extension Event.Identified {
 		excludedCircuitNames: [String]
 	) -> PersistDB.Predicate<Self> {
 		let calendar = Calendar.current
-		let startOfYear = DateComponents(calendar: calendar, year: year, month: 5).date!
+		let startOfYear = DateComponents(calendar: calendar, year: year, month: 4).date!
 		let endOfYear = calendar.date(byAdding: .year, value: 1, to: startOfYear)!
 		return \.value.date > startOfYear && \.value.date < endOfYear && !excludedCircuitNames.contains(\.circuit.value.name)
 	}
