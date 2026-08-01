@@ -12,6 +12,7 @@ public protocol CircuitSpec {
 	associatedtype CircuitFetchFields: CircuitFields
 
 	func fetchCircuit(abbreviatedAs abbreviation: String) async -> CircuitFetch
+	func fetchCircuit(named name: String) async -> CircuitFetch
 }
 
 // MARK: -
@@ -22,6 +23,14 @@ public extension CircuitSpec where
 	func fetchCircuit(abbreviatedAs abbreviation: String) async -> SingleResult<CircuitFetchFields?> {
 		let results: Results<CircuitFetchFields> = await fetch(
 			where: Circuit.Identified.predicate(abbreviation: abbreviation)
+		)
+
+		return results.map(\.first)
+	}
+
+	func fetchCircuit(named name: String) async -> SingleResult<CircuitFetchFields?> {
+		let results: Results<CircuitFetchFields> = await fetch(
+			where: Circuit.Identified.predicate(name: name)
 		)
 
 		return results.map(\.first)

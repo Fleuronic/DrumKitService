@@ -26,6 +26,10 @@ extension Circuit.Identified {
 	static func predicate(abbreviation: String) -> PersistDB.Predicate<Self> {
 		\.value.abbreviation == abbreviation
 	}
+
+	static func predicate(name: String) -> PersistDB.Predicate<Self> {
+		\.value.name == name
+	}
 }
 
 // MARK: -
