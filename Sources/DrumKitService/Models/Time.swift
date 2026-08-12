@@ -1,3 +1,5 @@
+// Copyright © Fleuronic LLC. All rights reserved.
+
 import Schemata
 import Foundation
 import struct DrumKit.Time
