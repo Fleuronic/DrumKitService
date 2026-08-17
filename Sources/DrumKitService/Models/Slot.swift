@@ -43,6 +43,16 @@ extension Slot.Identified {
 		\.event.value.detailsURL == eventDetailsURL
 	}
 
+	static func predicate(eventIDs: Set<Event.ID>) -> PersistDB.Predicate<Self> {
+		Array(eventIDs).contains(\.event.id)
+	}
+
+	// Fetch only the top-N placed slots per event (a DB-level row limit for the fast/list path).
+	// Rank 0 is the unscored/sentinel placement, so exclude it rather than counting it as top-N.
+	static func predicate(eventIDs: Set<Event.ID>, maxRank: Int) -> PersistDB.Predicate<Self> {
+		Array(eventIDs).contains(\.event.id) && \.performance.placement.value.rank >= 1 && \.performance.placement.value.rank <= maxRank
+	}
+
 	static func predicate(
 		eventID: Event.ID,
 		corpsID: Corps.ID?,

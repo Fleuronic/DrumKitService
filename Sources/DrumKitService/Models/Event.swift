@@ -41,6 +41,10 @@ extension Event.Identified {
 		\.value.date == date
 	}
 
+	static func predicate(dates: Set<Date>) -> PersistDB.Predicate<Self> {
+		Array(dates).contains(\.value.date)
+	}
+
 	static func predicate(
 		year: Int,
 		excludedCircuitNames: [String]
