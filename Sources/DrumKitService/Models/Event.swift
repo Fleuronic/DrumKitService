@@ -47,12 +47,23 @@ extension Event.Identified {
 
 	static func predicate(
 		year: Int,
-		excludedCircuitNames: [String]
+		includedCircuitNames: Set<String>,
+		includedCircuitAbbreviations: Set<String>
 	) -> PersistDB.Predicate<Self> {
 		let calendar = Calendar.current
 		let startOfYear = DateComponents(calendar: calendar, year: year, month: 3).date!
 		let endOfYear = calendar.date(byAdding: .year, value: 1, to: startOfYear)!
-		return \.value.date > startOfYear && \.value.date < endOfYear && !excludedCircuitNames.contains(\.circuit.value.name)
+		let inYear: PersistDB.Predicate<Self> = \.value.date > startOfYear && \.value.date < endOfYear
+		// No names and no abbreviations means no circuit constraint (every circuit is allowed).
+		var circuitClause: PersistDB.Predicate<Self>? = includedCircuitNames.isEmpty
+			? nil
+			: includedCircuitNames.contains(\.circuit.value.name)
+		for abbreviation in includedCircuitAbbreviations {
+			let clause: PersistDB.Predicate<Self> = \.circuit.value.abbreviation == abbreviation
+			circuitClause = circuitClause.map { $0 || clause } ?? clause
+		}
+		guard let circuitClause else { return inYear }
+		return inYear && circuitClause
 	}
 }
 

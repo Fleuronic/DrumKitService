@@ -53,6 +53,11 @@ extension Slot.Identified {
 		Array(eventIDs).contains(\.event.id) && \.performance.placement.value.rank >= 1 && \.performance.placement.value.rank <= maxRank
 	}
 
+	// Only slots that placed (rank ≥ 1), so an adjudicated event's result count excludes exhibitions.
+	static func predicate(placedInEventsWith eventIDs: Set<Event.ID>) -> PersistDB.Predicate<Self> {
+		Array(eventIDs).contains(\.event.id) && \.performance.placement.value.rank >= 1
+	}
+
 	static func predicate(
 		eventID: Event.ID,
 		corpsID: Corps.ID?,
