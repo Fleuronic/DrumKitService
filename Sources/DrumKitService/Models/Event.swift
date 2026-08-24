@@ -37,12 +37,8 @@ extension Event.Identified {
 		\.value.detailsURL == detailsURL
 	}
 
-	static func predicate(date: Date) -> PersistDB.Predicate<Self> {
-		\.value.date == date
-	}
-
-	static func predicate(dates: Set<Date>) -> PersistDB.Predicate<Self> {
-		Array(dates).contains(\.value.date)
+	static func predicate(ids: Set<Event.ID>) -> PersistDB.Predicate<Self> {
+		Array(ids).contains(\.id)
 	}
 
 	static func predicate(
@@ -58,10 +54,11 @@ extension Event.Identified {
 		var circuitClause: PersistDB.Predicate<Self>? = includedCircuitNames.isEmpty
 			? nil
 			: includedCircuitNames.contains(\.circuit.value.name)
-		for abbreviation in includedCircuitAbbreviations {
-			let clause: PersistDB.Predicate<Self> = \.circuit.value.abbreviation == abbreviation
-			circuitClause = circuitClause.map { $0 || clause } ?? clause
+		if !includedCircuitAbbreviations.isEmpty {
+			let abbreviationClause: PersistDB.Predicate<Self> = includedCircuitAbbreviations.map { $0 as String? }.contains(\.circuit.value.abbreviation)
+			circuitClause = circuitClause.map { $0 || abbreviationClause } ?? abbreviationClause
 		}
+
 		guard let circuitClause else { return inYear }
 		return inYear && circuitClause
 	}
