@@ -33,6 +33,10 @@ public struct IdentifiedEvent: Sendable {
 
 // MARK: -
 extension Event.Identified {
+	static func predicate(date: Date) -> PersistDB.Predicate<Self> {
+		\.value.date == date
+	}
+
 	static func predicate(detailsURL: URL) -> PersistDB.Predicate<Self> {
 		\.value.detailsURL == detailsURL
 	}

@@ -15,6 +15,7 @@ public protocol EventSpec {
 	associatedtype EventListFields: EventFields
 	associatedtype EventFetchFields: EventFields
 
+	func listEvents(on date: Date) async -> EventList
 	func listEvents(with ids: Set<Event.ID>) async -> EventList
 	func listEvents(for year: Int, includingCircuitsNamed names: Set<String>, orAbbreviated abbreviations: Set<String>) async -> EventList
 	func fetchEvent(with detailsURL: URL) async -> EventFetch
@@ -26,6 +27,10 @@ public extension EventSpec where
 	Error == StorageError,
 	EventListFields: Fields<Event.Identified> & Decodable,
 	EventFetchFields: Fields<Event.Identified> & Decodable {
+	func listEvents(on date: Date) async -> Results<EventListFields> {
+		await fetch(where: Event.Identified.predicate(date: date))
+	}
+
 	func listEvents(with ids: Set<Event.ID>) async -> Results<EventListFields> {
 		await fetch(where: Event.Identified.predicate(ids: ids))
 	}
