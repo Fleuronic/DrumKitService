@@ -19,6 +19,11 @@ public extension FeatureSpec where
 	Self: Storage & ResultProviding,
 	Error == StorageError,
 	FeatureFetchFields: Fields<Feature.Identified> & Decodable {
+	// Not a protocol requirement: only storage-backed conformers can list, and the API has no such query.
+	func listFeatures() async -> Results<FeatureFetchFields> {
+		await fetch()
+	}
+
 	func fetchFeature(named name: String) async -> SingleResult<FeatureFetchFields?> {
 		let results: Results<FeatureFetchFields> = await fetch(
 			where: Feature.Identified.predicate(name: name)

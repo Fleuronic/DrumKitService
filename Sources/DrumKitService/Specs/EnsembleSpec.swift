@@ -19,6 +19,11 @@ public extension EnsembleSpec where
 	Self: Storage & ResultProviding,
 	Error == StorageError,
 	EnsembleFetchFields: Fields<Ensemble.Identified> & Decodable {
+	// Not a protocol requirement: only storage-backed conformers can list, and the API has no such query.
+	func listEnsembles() async -> Results<EnsembleFetchFields> {
+		await fetch()
+	}
+
 	func fetchEnsemble(named name: String) async -> SingleResult<EnsembleFetchFields?> {
 		let results: Results<EnsembleFetchFields> = await fetch(
 			where: Ensemble.Identified.predicate(name: name)
