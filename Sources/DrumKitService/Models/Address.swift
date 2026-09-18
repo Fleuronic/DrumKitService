@@ -12,7 +12,7 @@ import struct Catena.IDFields
 import protocol Catena.Valued
 
 public extension Address {
-	typealias ID = Identified.ID
+	typealias ID = Identifier<Identified>
 	typealias IDFields = Catena.IDFields<Identified>
 	typealias Identified = IdentifiedAddress
 }

@@ -11,7 +11,7 @@ import struct Catena.IDFields
 import protocol Catena.Valued
 
 public extension State {
-	typealias ID = Identified.ID
+	typealias ID = Identifier<Identified>
 	typealias IDFields = Catena.IDFields<Identified>
 	typealias Identified = IdentifiedState
 }

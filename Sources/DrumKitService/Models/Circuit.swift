@@ -10,7 +10,7 @@ import struct Catena.IDFields
 import protocol Catena.Valued
 
 public extension Circuit {
-	typealias ID = Identified.ID
+	typealias ID = Identifier<Identified>
 	typealias IDFields = Catena.IDFields<Identified>
 	typealias Identified = IdentifiedCircuit
 }
@@ -51,13 +51,15 @@ extension Circuit.Identified: PersistDB.Model {
 		case url
 	}
 
-	public static let schema = Schema(
-		Self.init,
-		\.id * .id,
-		\.value.name * .name,
-		\.value.abbreviation * .abbreviation,
-		\.value.url * .url
-	)
+	public static var schema: Schema<Self> {
+		.init(
+			Self.init,
+			\.id * .id,
+			\.value.name * .name,
+			\.value.abbreviation * .abbreviation,
+			\.value.url * .url
+		)
+	}
 
 	public static let schemaName = "circuits"
 
