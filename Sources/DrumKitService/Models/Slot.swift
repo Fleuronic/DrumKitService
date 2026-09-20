@@ -10,6 +10,7 @@ import struct DrumKit.Time
 import struct DrumKit.Event
 import struct DrumKit.Performance
 import struct DrumKit.Corps
+import struct DrumKit.Division
 import struct DrumKit.Ensemble
 import struct DrumKit.Feature
 import struct Catena.IDFields
@@ -34,7 +35,8 @@ public struct IdentifiedSlot: Sendable {
 extension Slot.Identified {
 	static func predicate(year: Int) -> PersistDB.Predicate<Self> {
 		let calendar = Calendar.current
-		let startOfYear = DateComponents(calendar: calendar, year: year, month: 5).date!
+		// March, matching `Event.Identified` — a narrower window leaves early events with no slots.
+		let startOfYear = DateComponents(calendar: calendar, year: year, month: 3).date!
 		let endOfYear = calendar.date(byAdding: .year, value: 1, to: startOfYear)!
 		return \.event.value.date > startOfYear && \.event.value.date < endOfYear
 	}
@@ -56,6 +58,86 @@ extension Slot.Identified {
 	// Only slots that placed (rank ≥ 1), so an adjudicated event's result count excludes exhibitions.
 	static func predicate(placedInEventsWith eventIDs: Set<Event.ID>) -> PersistDB.Predicate<Self> {
 		Array(eventIDs).contains(\.event.id) && \.performance.placement.value.rank >= 1
+	}
+
+	static func predicate(eventIDs: Set<Event.ID>, corpsIDs: Set<Corps.ID>) -> PersistDB.Predicate<Self> {
+		predicate(placedInEventsWith: eventIDs) && Array(corpsIDs).contains(\.performance.corps.id)
+	}
+
+	// A season's slots are reachable by their event's date and circuit, which keeps the predicate free of
+	// an event-id list whose every element has to be rendered on each query.
+	static func predicate(
+		year: Int,
+		includedCircuitNames: Set<String>,
+		includedCircuitAbbreviations: Set<String>
+	) -> PersistDB.Predicate<Self> {
+		let inYear = predicate(year: year)
+
+		guard let circuitClause = circuitClause(
+			names: includedCircuitNames,
+			abbreviations: includedCircuitAbbreviations
+		) else { return inYear }
+
+		return inYear && circuitClause
+	}
+
+	static func predicate(
+		year: Int,
+		includedCircuitNames: Set<String>,
+		includedCircuitAbbreviations: Set<String>,
+		divisionID: Division.ID
+	) -> PersistDB.Predicate<Self> {
+		predicate(
+			year: year,
+			includedCircuitNames: includedCircuitNames,
+			includedCircuitAbbreviations: includedCircuitAbbreviations
+		) && \.performance.placement.value.rank >= 1
+			&& \.performance.placement.division.id == divisionID
+	}
+
+	static func predicate(
+		year: Int,
+		includedCircuitNames: Set<String>,
+		includedCircuitAbbreviations: Set<String>,
+		corpsIDs: Set<Corps.ID>
+	) -> PersistDB.Predicate<Self> {
+		predicate(
+			year: year,
+			includedCircuitNames: includedCircuitNames,
+			includedCircuitAbbreviations: includedCircuitAbbreviations
+		) && \.performance.placement.value.rank >= 1
+			&& Array(corpsIDs).contains(\.performance.corps.id)
+	}
+
+	// The null-sentinel division stands in for placements scored without one, so it is never a division.
+	static func predicate(
+		divisionedIn year: Int,
+		includedCircuitNames: Set<String>,
+		includedCircuitAbbreviations: Set<String>
+	) -> PersistDB.Predicate<Self> {
+		predicate(
+			year: year,
+			includedCircuitNames: includedCircuitNames,
+			includedCircuitAbbreviations: includedCircuitAbbreviations
+		) && \.performance.placement.value.rank >= 1
+			&& \.performance.placement.division.id != Division.ID.null
+	}
+
+	// No names and no abbreviations means no circuit constraint (every circuit is allowed).
+	private static func circuitClause(
+		names: Set<String>,
+		abbreviations: Set<String>
+	) -> PersistDB.Predicate<Self>? {
+		var clause: PersistDB.Predicate<Self>? = names.isEmpty
+			? nil
+			: names.contains(\.event.circuit.value.name)
+
+		if !abbreviations.isEmpty {
+			let abbreviationClause: PersistDB.Predicate<Self> = abbreviations.map { $0 as String? }.contains(\.event.circuit.value.abbreviation)
+			clause = clause.map { $0 || abbreviationClause } ?? abbreviationClause
+		}
+
+		return clause
 	}
 
 	static func predicate(
