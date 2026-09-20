@@ -54,17 +54,65 @@ extension Event.Identified {
 		let startOfYear = DateComponents(calendar: calendar, year: year, month: 3).date!
 		let endOfYear = calendar.date(byAdding: .year, value: 1, to: startOfYear)!
 		let inYear: PersistDB.Predicate<Self> = \.value.date > startOfYear && \.value.date < endOfYear
-		// No names and no abbreviations means no circuit constraint (every circuit is allowed).
-		var circuitClause: PersistDB.Predicate<Self>? = includedCircuitNames.isEmpty
+
+		guard let circuitClause = circuitClause(
+			names: includedCircuitNames,
+			abbreviations: includedCircuitAbbreviations
+		) else { return inYear }
+
+		return inYear && circuitClause
+	}
+
+	static func predicate(
+		dates: Set<Date>,
+		includedCircuitNames: Set<String> = [],
+		includedCircuitAbbreviations: Set<String> = []
+	) -> PersistDB.Predicate<Self> {
+		let onDates: PersistDB.Predicate<Self> = Array(dates).contains(\.value.date)
+
+		guard let circuitClause = circuitClause(
+			names: includedCircuitNames,
+			abbreviations: includedCircuitAbbreviations
+		) else { return onDates }
+
+		return onDates && circuitClause
+	}
+
+	// No names and no abbreviations means no circuit constraint (every circuit is allowed).
+	static func circuitClause(
+		names: Set<String>,
+		abbreviations: Set<String>
+	) -> PersistDB.Predicate<Self>? {
+		var clause: PersistDB.Predicate<Self>? = names.isEmpty
 			? nil
-			: includedCircuitNames.contains(\.circuit.value.name)
-		if !includedCircuitAbbreviations.isEmpty {
-			let abbreviationClause: PersistDB.Predicate<Self> = includedCircuitAbbreviations.map { $0 as String? }.contains(\.circuit.value.abbreviation)
-			circuitClause = circuitClause.map { $0 || abbreviationClause } ?? abbreviationClause
+			: names.contains(\.circuit.value.name)
+
+		if !abbreviations.isEmpty {
+			let abbreviationClause: PersistDB.Predicate<Self> = abbreviations.map { $0 as String? }.contains(\.circuit.value.abbreviation)
+			clause = clause.map { $0 || abbreviationClause } ?? abbreviationClause
 		}
 
-		guard let circuitClause else { return inYear }
-		return inYear && circuitClause
+		return clause
+	}
+
+	static func predicate(
+		year: Int,
+		includedCircuitNames: Set<String>,
+		includedCircuitAbbreviations: Set<String>,
+		on before: Date,
+		excludingShowsNamed excluded: [String]
+	) -> PersistDB.Predicate<Self> {
+		let inYear = predicate(
+			year: year,
+			includedCircuitNames: includedCircuitNames,
+			includedCircuitAbbreviations: includedCircuitAbbreviations
+		)
+
+		let elapsed: PersistDB.Predicate<Self> = \.value.date <= before
+		// An event always has a show row, so the name can be matched directly.
+		return excluded.reduce(inYear && elapsed) { predicate, name in
+			predicate && !Expression<Self, String>(\.show.value.name).contains(name)
+		}
 	}
 }
 
