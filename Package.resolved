@@ -16,7 +16,7 @@
       "location" : "https://github.com/Fleuronic/Catena",
       "state" : {
         "branch" : "main",
-        "revision" : "912d76affb31853b78473715ee453e49f975ee0b"
+        "revision" : "83925e1dea103a75e027aa41e0fd9037eaaeb8da"
       }
     },
     {
@@ -34,7 +34,7 @@
       "location" : "https://github.com/Fleuronic/Catenoid",
       "state" : {
         "branch" : "main",
-        "revision" : "431758293b1ccfa00cee15d4bba512f668c1bb2a"
+        "revision" : "54c0193dc3527ae7401030f8626029ffb7792985"
       }
     },
     {
@@ -52,7 +52,7 @@
       "location" : "https://github.com/Fleuronic/DrumKit",
       "state" : {
         "branch" : "main",
-        "revision" : "c8d4901a31885e218842fca12ecdb886a50800bd"
+        "revision" : "ac464edea759c6d18db8a73fd78c309b64b84ecc"
       }
     },
     {
@@ -79,7 +79,7 @@
       "location" : "https://github.com/jordanekay/PersistDB",
       "state" : {
         "branch" : "master",
-        "revision" : "75c77914db0f316b2d7269b8521b4226900d812d"
+        "revision" : "d534818e132dc9d9a6a588f754eec7efda806e13"
       }
     },
     {
@@ -97,7 +97,7 @@
       "location" : "https://github.com/jordanekay/Schemata",
       "state" : {
         "branch" : "master",
-        "revision" : "776426b83cf9f11d9a88923388866f36504fda26"
+        "revision" : "da457ce5c61d9dad591919f4b159039c2a8819fd"
       }
     },
     {

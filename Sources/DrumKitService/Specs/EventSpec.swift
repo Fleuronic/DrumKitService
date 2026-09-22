@@ -73,18 +73,22 @@ public extension EventSpec where
 	Self: Catenoid.Database & ResultProviding,
 	Store == PersistDB.Store<ReadWrite>,
 	Error == Never {
-	/// The season's distinct event dates, collapsed by the database rather than by materializing every event.
+	/// The season's earliest dates, oldest first.
 	func listEventDates<Fields: Catenoid.AnonymousFields<Event.Identified>>(
 		for year: Int,
 		includingCircuitsNamed names: Set<String> = [],
-		orAbbreviated abbreviations: Set<String> = []
+		orAbbreviated abbreviations: Set<String> = [],
+		earliest limit: Int
 	) async -> Results<Fields> {
 		await fetchAnonymous(
 			where: Event.Identified.predicate(
 				year: year,
 				includedCircuitNames: names,
 				includedCircuitAbbreviations: abbreviations
-			)
+			),
+			sortedBy: \.value.date,
+			ascending: true,
+			limit: limit
 		)
 	}
 
@@ -141,6 +145,17 @@ public extension EventSpec where
 				year: year,
 				includedCircuitNames: names,
 				includedCircuitAbbreviations: abbreviations
+			)
+		)
+	}
+
+	/// The distinct circuits holding an event in the season.
+	func listCircuits<Fields: Catenoid.AnonymousFields<Event.Identified>>(for year: Int) async -> Results<Fields> {
+		await fetchAnonymous(
+			where: Event.Identified.predicate(
+				year: year,
+				includedCircuitNames: [],
+				includedCircuitAbbreviations: []
 			)
 		)
 	}

@@ -13,6 +13,7 @@ import struct DrumKit.Division
 import protocol Catena.Scoped
 import protocol Catena.ResultProviding
 import protocol Catenoid.Fields
+import protocol Catenoid.AnonymousFields
 import protocol Catenoid.Database
 import protocol Caesura.Storage
 
@@ -77,12 +78,13 @@ public extension SlotSpec where
 	Store == PersistDB.Store<ReadWrite>,
 	Error == Never,
 	SlotListFields: Fields<Slot.Identified> & Decodable {
-	func countDivisions(
+	/// Which divisions were scored that season, ignoring the null-sentinel division.
+	func listDivisions<Fields: Catenoid.AnonymousFields<Slot.Identified>>(
 		scoredIn year: Int,
 		includingCircuitsNamed names: Set<String> = [],
 		orAbbreviated abbreviations: Set<String> = []
-	) async -> SingleResult<Int> {		await countDistinct(
-			\Slot.Identified.performance.placement.division.id,
+	) async -> Results<Fields> {
+		await fetchAnonymous(
 			where: Slot.Identified.predicate(
 				divisionedIn: year,
 				includedCircuitNames: names,
@@ -91,57 +93,67 @@ public extension SlotSpec where
 		)
 	}
 
-	/// Every placed slot that season for the given corps.
-	func listSlots(
-		placedIn year: Int,
-		includingCircuitsNamed names: Set<String> = [],
-		orAbbreviated abbreviations: Set<String> = [],
-		forCorpsWith corpsIDs: Set<Corps.ID>
-	) async -> Results<SlotListFields> {
-		await fetch(
-			where: Slot.Identified.predicate(
-				year: year,
-				includedCircuitNames: names,
-				includedCircuitAbbreviations: abbreviations,
-				corpsIDs: corpsIDs
-			)
+	/// The event of every placed slot in the given events, one row per competitor.
+	func listPlacedSlots<Fields: Catenoid.AnonymousFields<Slot.Identified>>(
+		inEventsWith eventIDs: Set<Event.ID>
+	) async -> Results<Fields> {
+		await fetchAnonymous(
+			where: Slot.Identified.predicate(placedInEventsWith: eventIDs),
+			distinct: false
 		)
 	}
 
-	/// Whether anything placed in the given division that season.
-	func containsSlot(
-		placedIn year: Int,
+	/// How many distinct corps placed that season, optionally narrowed to one division.
+	func countPlacedCorps(
+		in year: Int,
 		includingCircuitsNamed names: Set<String> = [],
 		orAbbreviated abbreviations: Set<String> = [],
-		inDivisionWith divisionID: Division.ID
-	) async -> SingleResult<Bool> {
-		let results: Results<SlotListFields> = await fetch(
-			where: Slot.Identified.predicate(
-				year: year,
-				includedCircuitNames: names,
-				includedCircuitAbbreviations: abbreviations,
-				divisionID: divisionID
-			),
-			limit: 1
-		)
+		inDivisionWith divisionID: Division.ID? = nil
+	) async -> SingleResult<Int> {
+		var predicate = Slot.Identified.predicate(
+			placedIn: year,
+			includedCircuitNames: names,
+			includedCircuitAbbreviations: abbreviations
+		) && \Slot.Identified.performance.corps.id != Corps.ID.null
 
-		return results.map { !$0.isEmpty }
+		if let divisionID {
+			predicate = predicate && \Slot.Identified.performance.placement.division.id == divisionID
+		}
+
+		return await countDistinct(\Slot.Identified.performance.corps.id, where: predicate)
+	}
+
+	/// How many distinct corps had a slot in a circuited event that season, scored or not.
+	func countCorps(
+		in year: Int,
+		includingCircuitsNamed names: Set<String> = [],
+		orAbbreviated abbreviations: Set<String> = []
+	) async -> SingleResult<Int> {
+		await countDistinct(
+			\Slot.Identified.performance.corps.id,
+			where: Slot.Identified.predicate(
+				circuitedIn: year,
+				includedCircuitNames: names,
+				includedCircuitAbbreviations: abbreviations
+			) && \Slot.Identified.performance.corps.id != Corps.ID.null
+		)
 	}
 
 	/// The latest-dated slot that season which placed in the given division.
-	func fetchLatestSlot(
+	func fetchLatestSlot<Fields: Catenoid.AnonymousFields<Slot.Identified>>(
 		placedIn year: Int,
 		includingCircuitsNamed names: Set<String> = [],
 		orAbbreviated abbreviations: Set<String> = [],
 		inDivisionWith divisionID: Division.ID
-	) async -> SingleResult<SlotListFields?> {
-		let results: Results<SlotListFields> = await fetch(
+	) async -> SingleResult<Fields?> {
+		let results: Results<Fields> = await fetchAnonymous(
 			where: Slot.Identified.predicate(
 				year: year,
 				includedCircuitNames: names,
 				includedCircuitAbbreviations: abbreviations,
 				divisionID: divisionID
 			),
+			distinct: false,
 			sortedBy: \.event.value.date,
 			ascending: false,
 			limit: 1

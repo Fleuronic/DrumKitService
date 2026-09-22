@@ -8,6 +8,7 @@ import Foundation
 import struct DrumKit.Slot
 import struct DrumKit.Time
 import struct DrumKit.Event
+import struct DrumKit.Circuit
 import struct DrumKit.Performance
 import struct DrumKit.Corps
 import struct DrumKit.Division
@@ -121,6 +122,31 @@ extension Slot.Identified {
 			includedCircuitAbbreviations: includedCircuitAbbreviations
 		) && \.performance.placement.value.rank >= 1
 			&& \.performance.placement.division.id != Division.ID.null
+	}
+
+	// An event with no circuit is not part of any season's lineup, so its slots never count toward one.
+	static func predicate(
+		circuitedIn year: Int,
+		includedCircuitNames: Set<String>,
+		includedCircuitAbbreviations: Set<String>
+	) -> PersistDB.Predicate<Self> {
+		predicate(
+			year: year,
+			includedCircuitNames: includedCircuitNames,
+			includedCircuitAbbreviations: includedCircuitAbbreviations
+		) && \.event.circuit.id != Circuit.ID.null
+	}
+
+	static func predicate(
+		placedIn year: Int,
+		includedCircuitNames: Set<String>,
+		includedCircuitAbbreviations: Set<String>
+	) -> PersistDB.Predicate<Self> {
+		predicate(
+			circuitedIn: year,
+			includedCircuitNames: includedCircuitNames,
+			includedCircuitAbbreviations: includedCircuitAbbreviations
+		) && \.performance.placement.value.rank >= 1
 	}
 
 	// No names and no abbreviations means no circuit constraint (every circuit is allowed).
