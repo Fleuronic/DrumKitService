@@ -61,10 +61,6 @@ extension Slot.Identified {
 		Array(eventIDs).contains(\.event.id) && \.performance.placement.value.rank >= 1
 	}
 
-	static func predicate(eventIDs: Set<Event.ID>, corpsIDs: Set<Corps.ID>) -> PersistDB.Predicate<Self> {
-		predicate(placedInEventsWith: eventIDs) && Array(corpsIDs).contains(\.performance.corps.id)
-	}
-
 	// A season's slots are reachable by their event's date and circuit, which keeps the predicate free of
 	// an event-id list whose every element has to be rendered on each query.
 	static func predicate(
@@ -94,20 +90,6 @@ extension Slot.Identified {
 			includedCircuitAbbreviations: includedCircuitAbbreviations
 		) && \.performance.placement.value.rank >= 1
 			&& \.performance.placement.division.id == divisionID
-	}
-
-	static func predicate(
-		year: Int,
-		includedCircuitNames: Set<String>,
-		includedCircuitAbbreviations: Set<String>,
-		corpsIDs: Set<Corps.ID>
-	) -> PersistDB.Predicate<Self> {
-		predicate(
-			year: year,
-			includedCircuitNames: includedCircuitNames,
-			includedCircuitAbbreviations: includedCircuitAbbreviations
-		) && \.performance.placement.value.rank >= 1
-			&& Array(corpsIDs).contains(\.performance.corps.id)
 	}
 
 	// The null-sentinel division stands in for placements scored without one, so it is never a division.

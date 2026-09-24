@@ -48,19 +48,6 @@ public extension SlotSpec where
 		await fetch(where: Slot.Identified.predicate(eventIDs: eventIDs, maxRank: maxRank))
 	}
 
-	func listSlots(placedInEventsWith eventIDs: Set<Event.ID>) async -> Results<SlotListFields> {
-		await fetch(where: Slot.Identified.predicate(placedInEventsWith: eventIDs))
-	}
-
-	func listSlots(placedInEventsWith eventIDs: Set<Event.ID>, forCorpsWith corpsIDs: Set<Corps.ID>) async -> Results<SlotListFields> {
-		await fetch(
-			where: Slot.Identified.predicate(
-				eventIDs: eventIDs,
-				corpsIDs: corpsIDs
-			)
-		)
-	}
-
 	func listSlots(inEventWith eventID: Event.ID, forPerformanceByCorpsWith corpsID: Corps.ID?, ensembleWith ensembleID: Ensemble.ID?) async -> Results<SlotListFields> {
 		await fetch(
 			where: Slot.Identified.predicate(
