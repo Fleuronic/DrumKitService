@@ -49,6 +49,22 @@ public extension EventSpec where
 		)
 	}
 
+	func listEvents(
+		onAnyOf dates: Set<Date>,
+		includingCircuitsNamed names: Set<String> = [],
+		orAbbreviated abbreviations: Set<String> = [],
+		excludingShowsNamed excluded: [String]
+	) async -> Results<EventListFields> {
+		await fetch(
+			where: Event.Identified.predicate(
+				dates: dates,
+				includedCircuitNames: names,
+				includedCircuitAbbreviations: abbreviations,
+				excludingShowsNamed: excluded
+			)
+		)
+	}
+
 	func listEvents(for year: Int, includingCircuitsNamed names: Set<String> = [], orAbbreviated abbreviations: Set<String> = []) async -> Results<EventListFields> {
 		await fetch(
 			where: Event.Identified.predicate(

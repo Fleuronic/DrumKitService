@@ -66,16 +66,21 @@ extension Event.Identified {
 	static func predicate(
 		dates: Set<Date>,
 		includedCircuitNames: Set<String> = [],
-		includedCircuitAbbreviations: Set<String> = []
+		includedCircuitAbbreviations: Set<String> = [],
+		excludingShowsNamed excluded: [String] = []
 	) -> PersistDB.Predicate<Self> {
-		let onDates: PersistDB.Predicate<Self> = Array(dates).contains(\.value.date)
+		var onDates: PersistDB.Predicate<Self> = Array(dates).contains(\.value.date)
 
-		guard let circuitClause = circuitClause(
+		if let circuitClause = circuitClause(
 			names: includedCircuitNames,
 			abbreviations: includedCircuitAbbreviations
-		) else { return onDates }
+		) {
+			onDates = onDates && circuitClause
+		}
 
-		return onDates && circuitClause
+		return excluded.reduce(onDates) { predicate, name in
+			predicate && !Expression<Self, String>(\.show.value.name).contains(name)
+		}
 	}
 
 	// No names and no abbreviations means no circuit constraint (every circuit is allowed).

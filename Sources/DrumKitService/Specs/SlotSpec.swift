@@ -161,4 +161,35 @@ public extension SlotSpec where
 
 		return results.map(\.first)
 	}
+
+	/// The latest-dated slot that season in which the corps placed, preferring one scored in a division.
+	func fetchLatestSlot(
+		placedIn year: Int,
+		includingCircuitsNamed names: Set<String> = [],
+		orAbbreviated abbreviations: Set<String> = [],
+		byCorpsNamed corpsName: String
+	) async -> SingleResult<SlotListFields?> {
+		let placed = Slot.Identified.predicate(
+			year: year,
+			includedCircuitNames: names,
+			includedCircuitAbbreviations: abbreviations
+		) && \.performance.placement.value.rank >= 1
+			&& \.performance.corps.value.name == corpsName
+
+		let divisioned: Results<SlotListFields> = await fetch(
+			where: placed && \.performance.placement.division.id != Division.ID.null,
+			sortedBy: \.event.value.date,
+			ascending: false,
+			limit: 1
+		)
+		if let slot = divisioned.value.first { return .success(slot) }
+
+		let undivisioned: Results<SlotListFields> = await fetch(
+			where: placed,
+			sortedBy: \.event.value.date,
+			ascending: false,
+			limit: 1
+		)
+		return undivisioned.map(\.first)
+	}
 }
