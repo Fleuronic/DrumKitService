@@ -127,14 +127,17 @@ public extension EventSpec where
 	func countEvents(
 		for year: Int,
 		includingCircuitsNamed names: Set<String> = [],
-		orAbbreviated abbreviations: Set<String> = []
+		orAbbreviated abbreviations: Set<String> = [],
+		after date: Date? = nil
 	) async -> SingleResult<Int> {
 		await count(
 			Event.Identified.self,
 			where: Event.Identified.predicate(
 				year: year,
 				includedCircuitNames: names,
-				includedCircuitAbbreviations: abbreviations
+				includedCircuitAbbreviations: abbreviations,
+				after: date,
+				excludingShowsNamed: []
 			)
 		)
 	}
