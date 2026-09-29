@@ -20,7 +20,6 @@ public protocol EventSpec {
 
 	func listEvents(on date: Date) async -> EventList
 	func listEvents(with ids: Set<Event.ID>) async -> EventList
-	func listEvents(onAnyOf dates: Set<Date>, includingCircuitsNamed names: Set<String>, orAbbreviated abbreviations: Set<String>) async -> EventList
 	func listEvents(for year: Int, includingCircuitsNamed names: Set<String>, orAbbreviated abbreviations: Set<String>) async -> EventList
 	func fetchEvent(with detailsURL: URL) async -> EventFetch
 }
@@ -37,16 +36,6 @@ public extension EventSpec where
 
 	func listEvents(with ids: Set<Event.ID>) async -> Results<EventListFields> {
 		await fetch(where: Event.Identified.predicate(ids: ids))
-	}
-
-	func listEvents(onAnyOf dates: Set<Date>, includingCircuitsNamed names: Set<String> = [], orAbbreviated abbreviations: Set<String> = []) async -> Results<EventListFields> {
-		await fetch(
-			where: Event.Identified.predicate(
-				dates: dates,
-				includedCircuitNames: names,
-				includedCircuitAbbreviations: abbreviations
-			)
-		)
 	}
 
 	func listEvents(
@@ -94,13 +83,17 @@ public extension EventSpec where
 		for year: Int,
 		includingCircuitsNamed names: Set<String> = [],
 		orAbbreviated abbreviations: Set<String> = [],
+		after date: Date? = nil,
+		excludingShowsNamed excluded: [String] = [],
 		earliest limit: Int
 	) async -> Results<Fields> {
 		await fetchAnonymous(
 			where: Event.Identified.predicate(
 				year: year,
 				includedCircuitNames: names,
-				includedCircuitAbbreviations: abbreviations
+				includedCircuitAbbreviations: abbreviations,
+				after: date,
+				excludingShowsNamed: excluded
 			),
 			sortedBy: \.value.date,
 			ascending: true,
@@ -113,27 +106,8 @@ public extension EventSpec where
 		for year: Int,
 		includingCircuitsNamed names: Set<String> = [],
 		orAbbreviated abbreviations: Set<String> = [],
-		mostRecent limit: Int
-	) async -> Results<Fields> {
-		await fetchAnonymous(
-			where: Event.Identified.predicate(
-				year: year,
-				includedCircuitNames: names,
-				includedCircuitAbbreviations: abbreviations
-			),
-			sortedBy: \.value.date,
-			ascending: false,
-			limit: limit
-		)
-	}
-
-	/// The season's most recent elapsed dates, excluding shows whose names carry any of `excluded`.
-	func listEventDates<Fields: Catenoid.AnonymousFields<Event.Identified>>(
-		for year: Int,
-		includingCircuitsNamed names: Set<String> = [],
-		orAbbreviated abbreviations: Set<String> = [],
-		onOrBefore date: Date,
-		excludingShowsNamed excluded: [String],
+		onOrBefore date: Date? = nil,
+		excludingShowsNamed excluded: [String] = [],
 		mostRecent limit: Int
 	) async -> Results<Fields> {
 		await fetchAnonymous(
