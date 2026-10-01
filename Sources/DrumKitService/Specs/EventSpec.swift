@@ -142,6 +142,21 @@ public extension EventSpec where
 		)
 	}
 
+	func countEventDates(
+		for year: Int,
+		includingCircuitsNamed names: Set<String> = [],
+		orAbbreviated abbreviations: Set<String> = []
+	) async -> SingleResult<Int> {
+		await countDistinct(
+			\Event.Identified.value.date,
+			where: Event.Identified.predicate(
+				year: year,
+				includedCircuitNames: names,
+				includedCircuitAbbreviations: abbreviations
+			)
+		)
+	}
+
 	/// The distinct circuits holding an event in the season.
 	func listCircuits<Fields: Catenoid.AnonymousFields<Event.Identified>>(for year: Int) async -> Results<Fields> {
 		await fetchAnonymous(
