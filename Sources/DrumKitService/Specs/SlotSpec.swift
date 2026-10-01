@@ -93,14 +93,21 @@ public extension SlotSpec where
 	func listPlacedSlots<Fields: Catenoid.AnonymousFields<Slot.Identified>>(
 		divisionedIn year: Int,
 		includingCircuitsNamed names: Set<String> = [],
-		orAbbreviated abbreviations: Set<String> = []
+		orAbbreviated abbreviations: Set<String> = [],
+		inDivisionWith divisionID: Division.ID? = nil
 	) async -> Results<Fields> {
-		await fetchAnonymous(
-			where: Slot.Identified.predicate(
-				divisionedIn: year,
-				includedCircuitNames: names,
-				includedCircuitAbbreviations: abbreviations
-			),
+		var predicate = Slot.Identified.predicate(
+			divisionedIn: year,
+			includedCircuitNames: names,
+			includedCircuitAbbreviations: abbreviations
+		)
+
+		if let divisionID {
+			predicate = predicate && \Slot.Identified.performance.placement.division.id == divisionID
+		}
+
+		return await fetchAnonymous(
+			where: predicate,
 			distinct: false
 		)
 	}
