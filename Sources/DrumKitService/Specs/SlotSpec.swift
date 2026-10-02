@@ -90,6 +90,13 @@ public extension SlotSpec where
 		)
 	}
 
+	func listPerformanceSlots<Fields: Catenoid.AnonymousFields<Slot.Identified>>(in year: Int) async -> Results<Fields> {
+		await fetchAnonymous(
+			where: Slot.Identified.predicate(year: year) && \Slot.Identified.performance.id != Performance.ID.null,
+			distinct: false
+		)
+	}
+
 	/// How many distinct corps placed that season, optionally narrowed to one division.
 	func countPlacedCorps(
 		in year: Int,
