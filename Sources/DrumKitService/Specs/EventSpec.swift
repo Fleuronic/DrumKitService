@@ -167,4 +167,15 @@ public extension EventSpec where
 			)
 		)
 	}
+
+	func listSeasonEvents<Fields: Catenoid.AnonymousFields<Event.Identified>>(in year: Int) async -> Results<Fields> {
+		await fetchAnonymous(
+			where: Event.Identified.predicate(
+				year: year,
+				includedCircuitNames: [],
+				includedCircuitAbbreviations: []
+			),
+			distinct: false
+		)
+	}
 }
