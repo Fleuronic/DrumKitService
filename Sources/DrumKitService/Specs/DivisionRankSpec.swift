@@ -1,17 +1,25 @@
 // Copyright © Fleuronic LLC. All rights reserved.
 
 import struct DrumKit.DivisionRank
+import protocol Catena.Scoped
 import protocol Catena.ResultProviding
 import protocol Catenoid.Fields
 import protocol Caesura.Storage
 
-public protocol DivisionRankSpec {}
+public protocol DivisionRankSpec {
+	associatedtype DivisionRankList: Scoped<DivisionRankListFields>
+
+	associatedtype DivisionRankListFields: DivisionRankFields
+
+	func listDivisionRanks() async -> DivisionRankList
+}
 
 // MARK: -
 public extension DivisionRankSpec where
 	Self: Storage & ResultProviding,
-	Error == StorageError {
-	func listDivisionRanks<ListFields: DivisionRankFields & Fields<DivisionRank.Identified> & Decodable>() async -> Results<ListFields> {
+	Error == StorageError,
+	DivisionRankListFields: Fields<DivisionRank.Identified> & Decodable {
+	func listDivisionRanks() async -> Results<DivisionRankListFields> {
 		await fetch()
 	}
 }

@@ -45,7 +45,7 @@ extension Event.Identified {
 		Array(ids).contains(\.id)
 	}
 
-	static func predicate(
+	public static func predicate(
 		year: Int,
 		includedCircuitNames: Set<String>,
 		includedCircuitAbbreviations: Set<String>
@@ -100,7 +100,7 @@ extension Event.Identified {
 		return clause
 	}
 
-	static func predicate(
+	public static func predicate(
 		year: Int,
 		includedCircuitNames: Set<String>,
 		includedCircuitAbbreviations: Set<String>,
@@ -112,22 +112,6 @@ extension Event.Identified {
 			includedCircuitNames: includedCircuitNames,
 			includedCircuitAbbreviations: includedCircuitAbbreviations,
 			dated: before.map { date -> PersistDB.Predicate<Self> in \.value.date <= date },
-			excludingShowsNamed: excluded
-		)
-	}
-
-	static func predicate(
-		year: Int,
-		includedCircuitNames: Set<String>,
-		includedCircuitAbbreviations: Set<String>,
-		after date: Date?,
-		excludingShowsNamed excluded: [String]
-	) -> PersistDB.Predicate<Self> {
-		predicate(
-			year: year,
-			includedCircuitNames: includedCircuitNames,
-			includedCircuitAbbreviations: includedCircuitAbbreviations,
-			dated: date.map { date -> PersistDB.Predicate<Self> in \.value.date > date },
 			excludingShowsNamed: excluded
 		)
 	}
