@@ -99,41 +99,6 @@ extension Event.Identified {
 
 		return clause
 	}
-
-	public static func predicate(
-		year: Int,
-		includedCircuitNames: Set<String>,
-		includedCircuitAbbreviations: Set<String>,
-		on before: Date?,
-		excludingShowsNamed excluded: [String]
-	) -> PersistDB.Predicate<Self> {
-		predicate(
-			year: year,
-			includedCircuitNames: includedCircuitNames,
-			includedCircuitAbbreviations: includedCircuitAbbreviations,
-			dated: before.map { date -> PersistDB.Predicate<Self> in \.value.date <= date },
-			excludingShowsNamed: excluded
-		)
-	}
-
-	private static func predicate(
-		year: Int,
-		includedCircuitNames: Set<String>,
-		includedCircuitAbbreviations: Set<String>,
-		dated dateClause: PersistDB.Predicate<Self>?,
-		excludingShowsNamed excluded: [String]
-	) -> PersistDB.Predicate<Self> {
-		let inYear = predicate(
-			year: year,
-			includedCircuitNames: includedCircuitNames,
-			includedCircuitAbbreviations: includedCircuitAbbreviations
-		)
-
-		// An event always has a show row, so the name can be matched directly.
-		return excluded.reduce(dateClause.map { inYear && $0 } ?? inYear) { predicate, name in
-			predicate && !Expression<Self, String>(\.show.value.name).contains(name)
-		}
-	}
 }
 
 // MARK: -
