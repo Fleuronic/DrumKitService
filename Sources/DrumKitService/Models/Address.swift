@@ -27,8 +27,8 @@ public struct IdentifiedAddress: Sendable {
 
 // MARK: -
 extension Address.Identified {
-	static func predicate(streetAddress: String) -> PersistDB.Predicate<Self> {
-		\.value.streetAddress == streetAddress
+	static func predicate(streetAddress: String, zipCode: String) -> PersistDB.Predicate<Self> {
+		\.value.streetAddress == streetAddress && \.zipCode.value.code == zipCode
 	}
 }
 

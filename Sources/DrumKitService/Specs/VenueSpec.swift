@@ -11,7 +11,7 @@ public protocol VenueSpec {
 
 	associatedtype VenueFetchFields: VenueFields
 
-	func fetchVenue(at streetAddress: String) async -> VenueFetch
+	func fetchVenue(at streetAddress: String, zipCode: String) async -> VenueFetch
 }
 
 // MARK: -
@@ -19,9 +19,9 @@ public extension VenueSpec where
 	Self: Storage & ResultProviding,
 	Error == StorageError,
 	VenueFetchFields: Fields<Venue.Identified> & Decodable {
-	func fetchVenue(at streetAddress: String) async -> SingleResult<VenueFetchFields?> {
+	func fetchVenue(at streetAddress: String, zipCode: String) async -> SingleResult<VenueFetchFields?> {
 		let results: Results<VenueFetchFields> = await fetch(
-			where: Venue.Identified.predicate(streetAddress: streetAddress)
+			where: Venue.Identified.predicate(streetAddress: streetAddress, zipCode: zipCode)
 		)
 
 		return results.map(\.first)

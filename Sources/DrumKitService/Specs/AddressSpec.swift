@@ -11,7 +11,7 @@ public protocol AddressSpec {
 
 	associatedtype AddressFetchFields: AddressFields
 
-	func fetchAddress(at streetAddress: String) async -> AddressFetch
+	func fetchAddress(at streetAddress: String, zipCode: String) async -> AddressFetch
 }
 
 // MARK: -
@@ -19,9 +19,9 @@ public extension AddressSpec where
 	Self: Storage & ResultProviding,
 	Error == StorageError,
 	AddressFetchFields: Fields<Address.Identified> & Decodable {
-	func fetchAddress(at streetAddress: String) async -> SingleResult<AddressFetchFields?> {
+	func fetchAddress(at streetAddress: String, zipCode: String) async -> SingleResult<AddressFetchFields?> {
 		let results: Results<AddressFetchFields> = await fetch(
-			where: Address.Identified.predicate(streetAddress: streetAddress)
+			where: Address.Identified.predicate(streetAddress: streetAddress, zipCode: zipCode)
 		)
 
 		return results.map(\.first)
