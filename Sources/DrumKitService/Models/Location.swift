@@ -48,6 +48,7 @@ extension Location.Identified: PersistDB.Model {
 	// MARK: Model
 	public enum Path: String, CodingKey {
 		case city
+		case timeZone = "time_zone"
 		case state
 	}
 
@@ -55,6 +56,7 @@ extension Location.Identified: PersistDB.Model {
 		Self.init,
 		\.id * .id,
 		\.value.city * .city,
+		\.value.timeZone * .timeZone,
 		\.state --> .state
 	)
 
@@ -71,11 +73,15 @@ private extension Location.Identified {
 	init(
 		id: Location.ID,
 		city: String,
+		timeZone: String?,
 		state: State.Identified
 	) {
 		self.init(
 			id: id,
-			value: .init(city: city),
+			value: .init(
+				city: city,
+				timeZone: timeZone
+			),
 			state: state
 		)
 	}
@@ -84,6 +90,7 @@ private extension Location.Identified {
 // MARK: -
 public extension [Location] {
 	var city: [String] { map(\.city) }
+	var timeZone: [String?] { map(\.timeZone) }
 }
 
 // MARK: -
@@ -97,6 +104,7 @@ public extension [Location.Identified] {
 		Self.init,
 		\.id * .id,
 		\.value.city * .city,
+		\.value.timeZone * .timeZone,
 		\.state --> .state
 	)
 }
@@ -106,12 +114,14 @@ private extension [Location.Identified] {
 	init(
 		ids: [Location.ID],
 		cities: [String],
+		timeZones: [String?],
 		states: [State.Identified]
 	) {
 		self = ids.enumerated().map { index, id in
 			.init(
 				id: id,
 				city: cities[index],
+				timeZone: timeZones[index],
 				state: states[index]
 			)
 		}
