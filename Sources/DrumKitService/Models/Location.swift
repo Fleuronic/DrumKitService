@@ -26,7 +26,7 @@ public struct IdentifiedLocation: Sendable {
 // MARK: -
 extension Location.Identified {
 	static func predicate(
-		city: String, 
+		city: String,
 		state: String
 	) -> PersistDB.Predicate<Self> {
 		\.value.city == city && \.state.value.abbreviation == state

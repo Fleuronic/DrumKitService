@@ -27,4 +27,3 @@ public extension AddressSpec where
 		return results.map(\.first)
 	}
 }
-	

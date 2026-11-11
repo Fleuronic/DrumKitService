@@ -27,4 +27,3 @@ public extension VenueSpec where
 		return results.map(\.first)
 	}
 }
-	
