@@ -11,7 +11,7 @@ public protocol LocationSpec {
 
 	associatedtype LocationFetchFields: LocationFields
 
-	func fetchLocation(for city: String, in state: String) async -> LocationFetch
+	func fetchLocation(for city: String?, in state: String) async -> LocationFetch
 }
 
 // MARK: -
@@ -19,7 +19,7 @@ public extension LocationSpec where
 	Self: Storage & ResultProviding,
 	Error == StorageError,
 	LocationFetchFields: Fields<Location.Identified> & Decodable {
-	func fetchLocation(for city: String, in state: String) async -> SingleResult<LocationFetchFields?> {
+	func fetchLocation(for city: String?, in state: String) async -> SingleResult<LocationFetchFields?> {
 		let results: Results<LocationFetchFields> = await fetch(
 			where: Location.Identified.predicate(
 				city: city,

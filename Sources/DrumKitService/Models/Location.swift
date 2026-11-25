@@ -26,7 +26,7 @@ public struct IdentifiedLocation: Sendable {
 // MARK: -
 extension Location.Identified {
 	static func predicate(
-		city: String,
+		city: String?,
 		state: String
 	) -> PersistDB.Predicate<Self> {
 		\.value.city == city && \.state.value.abbreviation == state
@@ -72,7 +72,7 @@ extension Location.Identified: PersistDB.Model {
 private extension Location.Identified {
 	init(
 		id: Location.ID,
-		city: String,
+		city: String?,
 		timeZone: String?,
 		state: State.Identified
 	) {
@@ -89,7 +89,7 @@ private extension Location.Identified {
 
 // MARK: -
 public extension [Location] {
-	var city: [String] { map(\.city) }
+	var city: [String?] { map(\.city) }
 	var timeZone: [String?] { map(\.timeZone) }
 }
 
@@ -113,7 +113,7 @@ public extension [Location.Identified] {
 private extension [Location.Identified] {
 	init(
 		ids: [Location.ID],
-		cities: [String],
+		cities: [String?],
 		timeZones: [String?],
 		states: [State.Identified]
 	) {
