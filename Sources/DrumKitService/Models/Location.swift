@@ -7,6 +7,7 @@ import Identity
 import Foundation
 import struct DrumKit.Location
 import struct DrumKit.State
+import struct DrumKit.Country
 import struct Catena.IDFields
 import protocol Catena.Valued
 
@@ -21,15 +22,20 @@ public struct IdentifiedLocation: Sendable {
 	public let id: Location.ID
 	public let value: Location
 	public let state: State.Identified
+	public let country: Country.Identified
 }
 
 // MARK: -
-extension Location.Identified {
+public extension Location.Identified {
 	static func predicate(
 		city: String?,
 		state: String
 	) -> PersistDB.Predicate<Self> {
 		\.value.city == city && \.state.value.abbreviation == state
+	}
+
+	static func predicate(countryOnlyIn country: String) -> PersistDB.Predicate<Self> {
+		\.value.city == nil && \.country.value.name == country
 	}
 }
 
@@ -50,6 +56,7 @@ extension Location.Identified: PersistDB.Model {
 		case city
 		case timeZone = "time_zone"
 		case state
+		case country
 	}
 
 	public static let schema = Schema(
@@ -57,7 +64,8 @@ extension Location.Identified: PersistDB.Model {
 		\.id * .id,
 		\.value.city * .city,
 		\.value.timeZone * .timeZone,
-		\.state --> .state
+		\.state --> .state,
+		\.country --> .country
 	)
 
 	public static let schemaName = "locations"
@@ -74,7 +82,8 @@ private extension Location.Identified {
 		id: Location.ID,
 		city: String?,
 		timeZone: String?,
-		state: State.Identified
+		state: State.Identified,
+		country: Country.Identified
 	) {
 		self.init(
 			id: id,
@@ -82,7 +91,8 @@ private extension Location.Identified {
 				city: city,
 				timeZone: timeZone
 			),
-			state: state
+			state: state,
+			country: country
 		)
 	}
 }
@@ -98,6 +108,7 @@ public extension [Location.Identified] {
 	var id: [Location.ID] { map(\.id) }
 	var value: [Location] { map(\.value) }
 	var state: [State.Identified] { map(\.state) }
+	var country: [Country.Identified] { map(\.country) }
 
 	// MARK: Model
 	static let schema = Schema<Self>(
@@ -105,7 +116,8 @@ public extension [Location.Identified] {
 		\.id * .id,
 		\.value.city * .city,
 		\.value.timeZone * .timeZone,
-		\.state --> .state
+		\.state --> .state,
+		\.country --> .country
 	)
 }
 
@@ -115,14 +127,16 @@ private extension [Location.Identified] {
 		ids: [Location.ID],
 		cities: [String?],
 		timeZones: [String?],
-		states: [State.Identified]
+		states: [State.Identified],
+		countries: [Country.Identified]
 	) {
 		self = ids.enumerated().map { index, id in
 			.init(
 				id: id,
 				city: cities[index],
 				timeZone: timeZones[index],
-				state: states[index]
+				state: states[index],
+				country: countries[index]
 			)
 		}
 	}
